@@ -1,0 +1,1 @@
+Scrapping LoRdi est un projet de scrapping sur internet 
