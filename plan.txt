@@ -1,0 +1,5 @@
+1) Analyse d'une page le bon coin
+2) a)Pertinence d'une page 
+   b)Scanner plusieurs pages automatiquement
+3) Stockage des annonces, présentation des résultats
+4) Recommencer 1 et 2 plus adapter 3 pour d'autres sources
