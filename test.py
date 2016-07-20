@@ -8,7 +8,7 @@ r= requests.get("https://www.leboncoin.fr/informatique/995687831.htm?ca=6_s")
 
 data = r.text
 
-soup = BeautifulSoup(data)
+soup = BeautifulSoup(data,"lxml")  
 
 annonce = soup.find('section',{'id':'adview'})
 

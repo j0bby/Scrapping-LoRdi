@@ -1,0 +1,24 @@
+https://www.leboncoin.fr/
+
++ catégorie/
+la catégorie des résultat
+
++ offres/ ou demandes/
+
++ région/?
+
++ th=1 
+
++ &q=requete
+
++ [&ur=1]
+urgent
+
++ [&it=1]
+recherche uniquement dans le titre
+
++ [&ps=0..11]
+prix mini 
+
++ [&pe=1..12]
+prix maxi
