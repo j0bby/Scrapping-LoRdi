@@ -1,3 +1,7 @@
+---------------------------------------------
+   		 RECHERCHE
+---------------------------------------------
+
 https://www.leboncoin.fr/
 
 + catégorie/
@@ -5,11 +9,25 @@ la catégorie des résultat
 
 + offres/ ou demandes/
 
-+ région/?
++ région/
 
-+ th=1 
++ [bonnes_affaires/] ou [département/[numdépart]] ou [occasions/]
+pour les offres autour de la région, le département [et les départ alentours], ou toute la france
+
++ ?
+
++ [th=1] ou [o=nbpage]
+th : présent uniquement pour la première page de recherche, il peut être omi
+o : indique la page. commence à 2. la première page utilise th ou rien 
 
 + &q=requete
+
++ [&f=p,c]
+f=p : particuliers
+f=c : pro
+
++ [&sp=0,1]
+trier par date (0) ou prix (1)
 
 + [&ur=1]
 urgent
