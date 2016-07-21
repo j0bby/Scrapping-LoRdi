@@ -6,7 +6,7 @@ import re  #regex
 
 url = "https://www.leboncoin.fr/informatique/offres/languedoc_roussillon/?th=1&q="
 
-requete = ["lordi","hp%20pavillon%20x360"]
+requete = ["lordi","hp%20x360","hp%20360x"]
 
 for i in requete:
     
