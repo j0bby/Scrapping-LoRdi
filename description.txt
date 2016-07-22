@@ -1,0 +1,8 @@
+Mots clefs indispensables : ordinateur/ordi/PC 
+Mots clefs improbables mais utiles : Lordi +30
+Modèle : Marque modèle -> attention dans certaines annonces on a Marque modèle modèle (Hp pavillon x360) regex de la forme \bMarque\b?[A-Za-z]?\b?Modèle +50
+Caractéristiques techniques, à classer par ordre de priorité pour chaque ordi (total +20)-> Processeur XXX 
+			       							XXgb ram 
+			       							Ecran tactile
+Accessoires : Housse, chargeur (+10)
+Autres : couleur spécifique, âge correspondant (+20)
