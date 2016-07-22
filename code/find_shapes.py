@@ -4,7 +4,7 @@ import cv2
 from scipy import ndimage
  
 # load the image
-image = ndimage.imread( "Exemple-annonces\\ordi2.jpg")
+image = ndimage.imread( "Exemple-annonces\\ordi3.jpg")
 
 import matplotlib.pyplot as plt
 plt.imshow(image)
