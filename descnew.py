@@ -1,6 +1,14 @@
 import re
 description= "bonjour carte graphique intel hd,je vend cet ordinateur portable tactile en parfait état de marche. hp x360 310 g1.ssd de 256gb. 4gb de ram. ecran tactile.avec sa housse de transport, son chargeur d'origine et sa notice d'utilisation ainsi q'un cd d'installation. le tout 250e"
 
+#nettoyage de la description : 
+# les accents : 
+description = re.sub('[éèêë]',"e",description)
+description = re.sub('[àâä]',"a",description)
+description = re.sub('[ïî]',"i",description)
+description = re.sub('[ûùü]',"u",description)
+print (description)
+
 regmarquemodele = 'hp[ .,]*[a-z]*[ ]*x[ ]*360[ ]*(310)?'
 print(re.search(regmarquemodele,description,re.IGNORECASE))
 
