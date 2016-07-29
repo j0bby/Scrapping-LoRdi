@@ -13,10 +13,17 @@ plt.show()
 # find all the 'black' shapes in the image
 lower = np.array([70, 2, 2]) #RGB
 upper = np.array([250, 65, 65]) #RGB
-shapeMask = cv2.inRange(image, lower, upper)
-
-plt.imshow(shapeMask)
+red = cv2.inRange(image, lower, upper)
+plt.imshow(red,cmap='gray')
 plt.show()
+
+
+lower = np.array([160, 160, 160]) #RGB
+upper = np.array([250, 255, 255]) #RGB
+red = cv2.inRange(image, lower, upper)
+plt.imshow(red,cmap='gray')
+plt.show()
+
 
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -26,6 +33,14 @@ red = cv2.inRange(hsv, lower, upper)
 
 plt.imshow(red)
 plt.show()
+
+
+gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+ret,thresh1 = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
+
+plt.imshow(thresh1,'gray')
+plt.show()
+
 
 green = np.uint8([[[0,0,255]]])
 hsv_green = cv2.cvtColor(green,cv2.COLOR_BGR2HSV)
