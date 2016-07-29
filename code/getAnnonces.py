@@ -22,15 +22,21 @@ for i in requete:
     # obtenir la section des annonces
     blockAnnonces = soup.find('section',{'class':'tabsContent block-white dontSwitch'})
     
-    # obtenir les annonces
-    annonces = blockAnnonces.find_all('li')
-    print('nb annonces : ' + str(len(annonces)))
     
-    # obtenir le titre de l'annonce
-    titres= [ x.a['title'] for x in annonces]
-    print("les titres :" + str(titres))
-    
-    # obtenir l'url de l'annonce
-    urls= [ x.a['href'] for x in annonces]
-    print(urls)
+    try:
+        # obtenir les annonces
+        annonces = blockAnnonces.find_all('li')
+        print('nb annonces : ' + str(len(annonces)))
+        
+        # obtenir le titre de l'annonce
+        titres= [ x.a['title'] for x in annonces]
+        print("les titres :" + str(titres))
+        
+        # obtenir l'url de l'annonce
+        urls= [ x.a['href'] for x in annonces]
+        print(urls)
+    except AttributeError:
+        print("aucune annonce trouvée")
+        
+   
     
