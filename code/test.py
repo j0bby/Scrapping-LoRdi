@@ -4,7 +4,7 @@ import requests
 import re
 
 
-r= requests.get("https://www.leboncoin.fr/informatique/995687831.htm?ca=6_s")
+r= requests.get("https://www.leboncoin.fr/informatique/980592511.htm?ca=13_s")
 
 data = r.text
 
