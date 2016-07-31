@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 def findCapot(red):
     
     densityL=sum(red==255)/red.shape[1]
-    print(densityL)
     startX=0
     while densityL[startX]<0.2:
         startX+=1
@@ -21,7 +20,6 @@ def findCapot(red):
     
     Tred = np.transpose(red)
     densityC=sum(Tred==255)/Tred.shape[0]
-    print(densityC)
     startY =0
     while densityC[startY]<0.2:
         startY+=1
@@ -34,9 +32,26 @@ def findCapot(red):
     print(endY)
     return startX,startY,endX,endY
 
-
-
-image = cv2.imread("..\\Exemple-annonces\\o7.jpg")
+def locateLogo(image):
+    
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    eroded = cv2.erode(image, kernel, iterations = 1)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7,12))
+    dilated = cv2.dilate(eroded, kernel, iterations = 1)
+    cv2.imwrite('dilated.png',dilated)
+    contour = cv2.Canny(dilated, 50, 200)
+    cv2.imwrite('contour.png',contour)
+    plt.imshow(dilated,'gray')
+    plt.show()
+    cv2.imshow("Image", contour)
+    cv2.waitKey(0)
+    tdil=np.transpose(dilated)
+    nbBlanc=sum(sum(tdil==255))
+    densityL=sum(tdil==255)/nbBlanc
+    print(densityL)
+    
+    
+image = cv2.imread("..\\Exemple-annonces\\oo2.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) #RGB
@@ -55,10 +70,10 @@ if freqRed >0.2 :
     
     img = image[startX:endX,startY:endY]
     gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    _,binaire = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
-    
+    _,binaire = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
+    locateLogo(binaire)
     cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
-    cv2.imshow("Image", binaire)
+    cv2.imshow("Image", image)
     cv2.waitKey(0)
 elif freqRed>0.05 :
     print("Some Red")
