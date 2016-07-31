@@ -51,7 +51,7 @@ def locateLogo(image):
     print(densityL)
     
     
-image = cv2.imread("..\\Exemple-annonces\\oo2.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo14.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) #RGB
@@ -68,8 +68,8 @@ if freqRed >0.2 :
         print("Red computer")
     startX,startY,endX,endY = findCapot(red)
     
-    img = image[startX:endX,startY:endY]
-    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    img = image[startY:endY,startX:endX]
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     _,binaire = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
     locateLogo(binaire)
     cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
