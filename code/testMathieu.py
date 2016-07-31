@@ -41,7 +41,7 @@ def findCapot(image):
 
 
 
-image = ndimage.imread( "..\\Exemple-annonces\\ordi5.jpg")
+image = ndimage.imread( "..\\Exemple-annonces\\ordi2.jpg")
 
 lower = np.array([70, 2, 2]) #RGB
 upper = np.array([250, 65, 65]) #RGB
