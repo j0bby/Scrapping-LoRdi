@@ -36,7 +36,7 @@ def locateLogo(image):
     
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
     eroded = cv2.erode(image, kernel, iterations = 1)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7,12))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
     dilated = cv2.dilate(eroded, kernel, iterations = 1)
     cv2.imwrite('dilated.png',dilated)
     contour = cv2.Canny(dilated, 50, 200)
@@ -51,7 +51,7 @@ def locateLogo(image):
     print(densityL)
     
     
-image = cv2.imread("..\\Exemple-annonces\\oo14.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) #RGB
@@ -71,10 +71,14 @@ if freqRed >0.2 :
     img = image[startY:endY,startX:endX]
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     _,binaire = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
-    locateLogo(binaire)
+    
     cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
     cv2.imshow("Image", image)
     cv2.waitKey(0)
+    
+    locateLogo(binaire)
+    
+    
 elif freqRed>0.05 :
     print("Some Red")
 elif freqRed>0.02:
