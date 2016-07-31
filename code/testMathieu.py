@@ -3,12 +3,7 @@ import cv2
 from scipy import ndimage
 import matplotlib.pyplot as plt
 
-def findCapot(image):
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    
-    lower = np.array([115, 135, 135]) #RGB
-    upper = np.array([125, 255, 255]) #RGB
-    red = cv2.inRange(hsv, lower, upper)
+def findCapot(red):
     
     densityL=sum(red==255)/red.shape[1]
     print(densityL)
@@ -41,35 +36,32 @@ def findCapot(image):
 
 
 
-image = ndimage.imread( "..\\Exemple-annonces\\ordi2.jpg")
+image = cv2.imread("..\\Exemple-annonces\\o7.jpg")
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-lower = np.array([70, 2, 2]) #RGB
-upper = np.array([250, 65, 65]) #RGB
-red = cv2.inRange(image, lower, upper)
+lower = np.array([120, 80, 80]) #RGB
+upper = np.array([179, 255, 255]) #RGB
+red = cv2.inRange(hsv, lower, upper)
 nbRed=sum(sum(red ==255))
 freqRed=nbRed/(red.shape[1]*red.shape[0])
 print(freqRed)
 
-hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)   
-lower = np.array([115, 135, 135]) #RGB
-upper = np.array([125, 255, 255]) #RGB
-redH = cv2.inRange(hsv, lower, upper)
-nbRedH=sum(sum(redH ==255))
-freqRedH=nbRedH/(redH.shape[1]*redH.shape[0])
-print(freqRedH)
-
-
-if freqRed >0.3 :
-    if freqRedH<0.3:
-        print("not lordi, check background")
+if freqRed >0.2 :
+    if freqRed>0.8:
+        print("Care, background Red")
     else :
         print("Red computer")
-        startX,startY,endX,endY = findCapot(image)
-        cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
-        cv2.imshow("Image", image)
-        cv2.waitKey(0)
+    startX,startY,endX,endY = findCapot(red)
+    
+    img = image[startX:endX,startY:endY]
+    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    _,binaire = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
+    
+    cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
+    cv2.imshow("Image", binaire)
+    cv2.waitKey(0)
 elif freqRed>0.05 :
-    print("housse region")
+    print("Some Red")
 elif freqRed>0.02:
     print("some Red")
 else:
