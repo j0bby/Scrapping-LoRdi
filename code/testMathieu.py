@@ -70,6 +70,10 @@ if freqRed >0.2 :
     
     img = image[startY:endY,startX:endX]
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    clahe = cv2.createCLAHE(clipLimit=50, tileGridSize=(4,4))
+    gray = clahe.apply(gray)
+    cv2.imshow("Image", gray)
+    cv2.waitKey(0)
     _,binaire = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
     
     cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
