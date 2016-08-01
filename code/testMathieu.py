@@ -3,8 +3,14 @@ import cv2
 from scipy import ndimage
 import matplotlib.pyplot as plt
 
+def adjust_gamma(image, gamma=1.0):
+    invGamma = 1.0 / gamma
+    table = np.array([((i / 255.0) ** invGamma) * 255
+    for i in np.arange(0, 256)]).astype("uint8")
+    return cv2.LUT(image, table)
+
 def findCapot(red):
-    
+
     densityL=sum(red==255)/red.shape[1]
     startX=0
     while densityL[startX]<0.2:
@@ -51,7 +57,7 @@ def locateLogo(image):
     print(densityL)
     
     
-image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo14.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) #RGB
@@ -70,8 +76,9 @@ if freqRed >0.2 :
     
     img = image[startY:endY,startX:endX]
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    clahe = cv2.createCLAHE(clipLimit=50, tileGridSize=(4,4))
+    clahe = cv2.createCLAHE(clipLimit=8, tileGridSize=(20,20))
     gray = clahe.apply(gray)
+    cv2.fastNlMeansDenoising(gray,gray,30,50,30)
     cv2.imshow("Image", gray)
     cv2.waitKey(0)
     _,binaire = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
