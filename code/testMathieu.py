@@ -9,44 +9,71 @@ def adjust_gamma(image, gamma=1.0):
     for i in np.arange(0, 256)]).astype("uint8")
     return cv2.LUT(image, table)
 
-def findCapot(red):
+def findCapot(red,freqRed):
 
-    densityL=sum(red==255)/red.shape[1]
+    densityL=sum(red==255)/red.shape[0]
     startX=0
-    while densityL[startX]<0.2:
+    freqtemp=freqRed
+    while densityL[startX]<freqtemp:
         startX+=1
+        if startX==len(densityL)-1:
+            startX=0
+            freqtemp*=0.9
     print(startX)
     
+    freqtemp=freqRed
     endX=-1
-    while densityL[endX]<0.2:
+    while densityL[endX]<freqtemp:
         endX-=1
+        if endX == -len(densityL)+startX:
+            endX=-1
+            freqtemp*=0.9
     endX+=len(densityL)
     print(endX)
     
     
     Tred = np.transpose(red)
     densityC=sum(Tred==255)/Tred.shape[0]
+    
+    freqtemp=freqRed
     startY =0
-    while densityC[startY]<0.2:
+    while densityC[startY]<freqtemp:
         startY+=1
+        if startY==len(densityC)-1:
+            startY=0
+            freqtemp*=0.9
     print(startY)
     
+    freqtemp=freqRed
     endY =-1
-    while densityC[endY]<0.2:
+    while densityC[endY]<freqRed:
         endY-=1
+        if endY == -len(densityC)+startY:
+            endY=-1
+            freqtemp*=0.9
     endY+=len(densityC)
     print(endY)
+    
+    print(densityL)
+    print(densityC)
     return startX,startY,endX,endY
 
 def locateLogo(image):
     
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-    eroded = cv2.erode(image, kernel, iterations = 1)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
-    dilated = cv2.dilate(eroded, kernel, iterations = 1)
-    cv2.imwrite('dilated.png',dilated)
+    dilated = cv2.dilate(image, kernel, iterations = 1)
+    plt.imshow(dilated,'gray')
+    plt.show()
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    eroded = cv2.erode(dilated, kernel, iterations = 2)
+
+    plt.imshow(eroded,'gray')
+    plt.show()
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6,6))
+    dilated = cv2.dilate(eroded, kernel, iterations = 2)
+    
     contour = cv2.Canny(dilated, 50, 200)
-    cv2.imwrite('contour.png',contour)
+    
     plt.imshow(dilated,'gray')
     plt.show()
     cv2.imshow("Image", contour)
@@ -57,12 +84,15 @@ def locateLogo(image):
     print(densityL)
     
     
-image = cv2.imread("..\\Exemple-annonces\\oo14.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-lower = np.array([120, 80, 80]) #RGB
-upper = np.array([179, 255, 255]) #RGB
+lower = np.array([120, 80, 80]) 
+upper = np.array([179, 255, 255]) 
 red = cv2.inRange(hsv, lower, upper)
+lower = np.array([0, 80, 80]) 
+upper = np.array([5, 255, 255]) 
+red += cv2.inRange(hsv, lower, upper)
 nbRed=sum(sum(red ==255))
 freqRed=nbRed/(red.shape[1]*red.shape[0])
 print(freqRed)
@@ -72,17 +102,19 @@ if freqRed >0.2 :
         print("Care, background Red")
     else :
         print("Red computer")
-    startX,startY,endX,endY = findCapot(red)
+    startX,startY,endX,endY = findCapot(red,freqRed)
     
     img = image[startY:endY,startX:endX]
+
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=8, tileGridSize=(20,20))
     gray = clahe.apply(gray)
-    cv2.fastNlMeansDenoising(gray,gray,30,50,30)
+    cv2.fastNlMeansDenoising(gray,gray,30,41,61)
     cv2.imshow("Image", gray)
     cv2.waitKey(0)
-    _,binaire = cv2.threshold(gray,170,255,cv2.THRESH_BINARY)
-    
+    _,binaire = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
+    plt.imshow(binaire,'gray')
+    plt.show()
     cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
     cv2.imshow("Image", image)
     cv2.waitKey(0)
