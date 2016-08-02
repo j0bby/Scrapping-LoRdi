@@ -8,6 +8,13 @@ description = re.sub('[éèêë]',"e",description)
 description = re.sub('[àâä]',"a",description)
 description = re.sub('[ïî]',"i",description)
 description = re.sub('[ûùü]',"u",description)
+#ponctuation
+#ajout d'espaces pour mots distincts
+description = re.sub( r'([a-zA-Z])([,.!\'])', r'\1 \2', description )
+translator = str.maketrans({key: None for key in string.punctuation})
+description= description.translate(translator)
+
+
 print (description)
 #Stopwords
 stopwords = []
@@ -16,12 +23,10 @@ with open('newstopwords.txt',"r",encoding="utf-8") as fileinput:
         stopwords.append(line.rstrip())
         
 description=' '.join([word for word in description.split() if word not in stopwords])
-#ponctuation
-#ajout d'espaces pour mots distincts
-description = re.sub( r'([a-zA-Z])([,.!\'])', r'\1 \2', description )
-translator = str.maketrans({key: None for key in string.punctuation})
-description= description.translate(translator)
 print(description)
+
+
+
 regmarquemodele = 'hp[ .,]*[a-z]*[ ]*x[ ]*360[ ]*(310)?'
 print(re.search(regmarquemodele,description,re.IGNORECASE))
 
