@@ -27,9 +27,13 @@ print(description)
 
 
 
-regmarquemodele = 'hp[ .,]*[a-z]*[ ]*x[ ]*360[ ]*(310)?'
-print(re.search(regmarquemodele,description,re.IGNORECASE))
-
+regmarquemodele = '(?P<marque>hp)[ ]*(?P<divers>[a-z]*)[ ]*(?P<modele>x[ ]*360)[ ]*(?P<modadd>310)?'
+marquemodele = re.search(regmarquemodele,description,re.IGNORECASE)
+if marquemodele is not None:
+    print(marquemodele.group('marque'))
+    print(marquemodele.group('divers'))
+    print(marquemodele.group('modele'))
+    print(marquemodele.group('modadd'))
 
 #regproc = 'intel[ ]*(pentium)?[ ]*n?[ ]*3540'
 regproc ='[ .,]+intel [ ]*([a-z, ]*n?3540|pentium[ ]*n?[ ]*(3540)?)'
@@ -38,12 +42,13 @@ print(re.search(regproc,description,re.IGNORECASE))
 regfreqproc= '[ .,]+2[., ]+66[ ]*ghz'
 print(re.search(regfreqproc,description,re.IGNORECASE))
 
-regos='(?P<os>w(indows)?)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista))?(?P<type>[ ]*pro)?'
+regos='(?P<os>w(indows)?)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista|xp))?(?P<type>[ ]*pro|familial|n)?'
 os = re.search(regos,description,re.IGNORECASE)
-print(os.group('os'))
-print(os.group('num'))
-print(os.group('type'))
-print(re.search(regos,description,re.IGNORECASE))
+if os is not None:
+    print(os.group('os'))
+    print(os.group('num'))
+    print(os.group('type'))
+    print(re.search(regos,description,re.IGNORECASE))
 #peu être un peu trop large vu que w8 marche, laisser indows obligatoire ?
 
 regarch = '[ .,]+64[ ]*bit(s)?'
@@ -57,11 +62,19 @@ regdd = '[ .,]+256[ ]*gi?[ob][a-z ]*(ssd)?'
 #chercher également avec '[ .,]ssd[a-z ]256[ ]*gi?[ob]' ?
 print(re.search(regdd,description,re.IGNORECASE))
 
-reggraph = 'carte[ ]*graphique[a-z ]*intel[ ]*hd[ ]*(graphic)?'
+reggraph = 'carte[ ]*graphique[a-z ]*(?P<marque>intel)[ ]*(?P<c1>hd)[ ]*(?P<c2>graphic)?'
+graph = re.search(reggraph,description,re.IGNORECASE)
 print(re.search(reggraph,description,re.IGNORECASE))
+if graph is not None:
+    print(graph.group('marque'))
+    print(graph.group('c1'))
+    print(graph.group('c2'))
 #enlever carte graphique ?
 
-#TODO : enlever les accents
-regecran='[ ,.]+ecran[ ]*tactile[ ,]*(hd)?[ ]*(11[.,]6[ ]*(pouces?)?)?'
-print(re.search(regecran,description,re.IGNORECASE))
+regecran='[ ,.]+(?P<ecran>ecran[ ]*tactile)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[.,]6[ ]*(pouces?)?)?'
+ecr = re.search(regecran,description,re.IGNORECASE)
+if ecr is not None:
+    print(ecr.group('ecran'))
+    print(ecr.group('c1'))
+    print(ecr.group('c2'))
 
