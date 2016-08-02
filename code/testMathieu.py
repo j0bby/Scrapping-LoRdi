@@ -78,13 +78,50 @@ def locateLogo(image):
     plt.show()
     cv2.imshow("Image", contour)
     cv2.waitKey(0)
+    
+    return dilated
+    
+def findLogo(dilated):
     tdil=np.transpose(dilated)
     nbBlanc=sum(sum(tdil==255))
-    densityL=sum(tdil==255)/nbBlanc
+    freqBlanc=nbBlanc/(dilated.shape[0]*dilated.shape[1])
+    densityL=sum(tdil==255)/tdil.shape[0]
     print(densityL)
+    densityC=sum(dilated==255)/dilated.shape[0]
+    zoneL=[]
+    zonestart=-1
+    for i in range(len(densityL)-1):
+        if densityL[i]!=0:
+            if zonestart==-1 :
+                zonestart=i
+            
+        elif zonestart!=-1:
+            zoneL.append([zonestart,i])
+            zonestart=-1
+        
+    if zonestart!=-1:
+        zoneL.append([zonestart,len(densityL)-1])
+    print(zoneL)
+    
+    zoneC=[]
+    zonestart=-1
+    for i in range(len(densityC)-1):
+        if densityC[i]!=0:
+            if zonestart==-1 :
+                zonestart=i
+            
+        elif zonestart!=-1:
+            zoneC.append([zonestart,i])
+            zonestart=-1
+        
+    if zonestart!=-1:
+        zoneC.append([zonestart,len(densityC)-1])
+    print(zoneC)
+
+    return zoneL,zoneC
     
     
-image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo10.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) 
@@ -119,8 +156,15 @@ if freqRed >0.2 :
     cv2.imshow("Image", image)
     cv2.waitKey(0)
     
-    locateLogo(binaire)
+    dilated = locateLogo(binaire)
+    zoneL,zoneC=findLogo(dilated)
     
+    for l in zoneL:
+        for c in zoneC:
+            cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
+            
+    cv2.imshow("Image", img)
+    cv2.waitKey(0)
     
 elif freqRed>0.05 :
     print("Some Red")
