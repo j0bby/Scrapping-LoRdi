@@ -1,4 +1,5 @@
 import re
+import string
 description= "bonjour carte graphique intel hd,je vend cet ordinateur portable tactile en parfait état de marche. hp x360 310 g1.ssd de 256gb. 4gb de ram. ecran tactile.avec sa housse de transport, son chargeur d'origine et sa notice d'utilisation ainsi q'un cd d'installation. le tout 250e"
 
 #nettoyage de la description : 
@@ -8,7 +9,19 @@ description = re.sub('[àâä]',"a",description)
 description = re.sub('[ïî]',"i",description)
 description = re.sub('[ûùü]',"u",description)
 print (description)
-
+#Stopwords
+stopwords = []
+with open('newstopwords.txt',"r",encoding="utf-8") as fileinput:
+    for line in fileinput:
+        stopwords.append(line.rstrip())
+        
+description=' '.join([word for word in description.split() if word not in stopwords])
+#ponctuation
+#ajout d'espaces pour mots distincts
+description = re.sub( r'([a-zA-Z])([,.!\'])', r'\1 \2', description )
+translator = str.maketrans({key: None for key in string.punctuation})
+description= description.translate(translator)
+print(description)
 regmarquemodele = 'hp[ .,]*[a-z]*[ ]*x[ ]*360[ ]*(310)?'
 print(re.search(regmarquemodele,description,re.IGNORECASE))
 
