@@ -121,7 +121,7 @@ def findLogo(dilated):
     return zoneL,zoneC
     
     
-image = cv2.imread("..\\Exemple-annonces\\oo10.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) 
@@ -161,7 +161,10 @@ if freqRed >0.2 :
     
     for l in zoneL:
         for c in zoneC:
-            cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
+            propBlancs = sum(sum(dilated[l[0]:l[1],c[0]:c[1]]))
+            if propBlancs>0.5:
+                
+                cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
             
     cv2.imshow("Image", img)
     cv2.waitKey(0)
