@@ -1,7 +1,7 @@
 import re
 import string
-description= "bonjour carte graphique intel hd,je vend cet ordinateur portable tactile en parfait état de marche. hp x360 310 g1.ssd de 256gb. 4gb de ram. ecran tactile.avec sa housse de transport, son chargeur d'origine et sa notice d'utilisation ainsi q'un cd d'installation. le tout 250e"
-
+#description= "bonjour carte graphique intel hd,je vend cet ordinateur portable tactile en parfait état de marche. hp x360 310 g1.ssd de 256gb. 4gb de ram. ecran tactile.avec sa housse de transport, son chargeur d'origine et sa notice d'utilisation ainsi q'un cd d'installation. le tout 250e"
+description = "Je vends mon hp pavilion x360 écran tactile sous windows 10 pour la somme de 150e. L'ordinateur est en bon état, et il sera vendu avec housse de protection ainsi que le chargeur. Le prix est ferme sachant que l'ordinateur vaut 500e neuf, me contacter uniquement par telephone"
 #nettoyage de la description : 
 # les accents : 
 description = re.sub('[éèêë]',"e",description)
@@ -14,7 +14,7 @@ description = re.sub( r'([a-zA-Z])([,.!\'])', r'\1 \2', description )
 translator = str.maketrans({key: None for key in string.punctuation})
 description= description.translate(translator)
 
-
+description=description.lower()
 print (description)
 #Stopwords
 stopwords = []
@@ -38,7 +38,11 @@ print(re.search(regproc,description,re.IGNORECASE))
 regfreqproc= '[ .,]+2[., ]+66[ ]*ghz'
 print(re.search(regfreqproc,description,re.IGNORECASE))
 
-regos='[ .,]+w(indows)?[ ]*8([.,]1)?([ ]*pro)?'
+regos='(?P<os>w(indows)?)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista))?(?P<type>[ ]*pro)?'
+os = re.search(regos,description,re.IGNORECASE)
+print(os.group('os'))
+print(os.group('num'))
+print(os.group('type'))
 print(re.search(regos,description,re.IGNORECASE))
 #peu être un peu trop large vu que w8 marche, laisser indows obligatoire ?
 
