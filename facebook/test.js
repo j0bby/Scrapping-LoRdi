@@ -15,9 +15,11 @@ graph.setVersion("2.7");
 // Routes
 
 app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/index.html');
 });
-
+var param = {
+    fields: "created_time,full_picture,from,message"
+};
 app.get('/auth/facebook', function(req, res) {
 
     // we don't have a code yet
@@ -45,19 +47,19 @@ app.get('/auth/facebook', function(req, res) {
         "client_secret": conf.client_secret,
         "code": req.query.code
     }, function(err, facebookRes) {
+
         res.redirect('/UserHasLoggedIn');
         graph.get("1458535937750336/feed", function(err, res) {
-  			console.log(res); // { id: '4', name: 'Mark Zuckerberg'... }
-		});
-
-  		var param = {fields:"created_time,full_picture"};
-		graph.get('/1458535937750336_1763254683945125',param, function(err,res){
-			console.log(res);
-		});
-		
-		graph.get("819683408098579/feed", function(err, res) {
-  			console.log(res); // { id: '4', name: 'Mark Zuckerberg'... }
-		});
+            res.data.forEach(function(obj) {
+                if(obj.message){
+                    if(obj.message.indexOf("kallax") !== -1){
+                        graph.get('/'+obj.id,param,function(err2,res2){
+                            console.log(res2);
+                        })
+                    }
+                }
+            });
+        });
     });
 
 
@@ -66,7 +68,7 @@ app.get('/auth/facebook', function(req, res) {
 
 // user gets sent here after being authorized
 app.get('/UserHasLoggedIn', function(req, res) {
-	res.sendFile(__dirname + '/log.html');
+    res.sendFile(__dirname + '/log.html');
 });
 
 
