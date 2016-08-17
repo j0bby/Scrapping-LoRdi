@@ -69,6 +69,7 @@ def locateLogo(image):
 
     plt.imshow(eroded,'gray')
     plt.show()
+    
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6,6))
     dilated = cv2.dilate(eroded, kernel, iterations = 2)
     
@@ -119,7 +120,112 @@ def findLogo(dilated):
     print(zoneC)
 
     return zoneL,zoneC
+
+def recentre (pict):
     
+    plt.imshow(pict,'gray')
+    plt.show()
+    tpict=np.transpose(pict)
+    
+    densityL=sum(tpict==0)
+
+    densityC=sum(pict==0)
+    
+    startC=0
+    endC=-1
+    while densityC[startC]<3:
+        startC+=1
+    
+    while densityC[endC]<3:
+        endC-=1
+        
+    print(startC)
+    print(endC)
+    
+    startL=0
+    endL=-1
+    while densityL[startL]<3:
+        startL+=1
+    
+    while densityL[endL]<3:
+        endL-=1
+        
+    print(startL)
+    print(endL)
+    
+    return startL,endL,startC,endC
+    
+def isRed(img):
+    fRed=sum(sum(img==255))/(img.shape[0]*img.shape[1])
+    print(fRed)
+    return fRed>0.9
+    
+def extendArea(pict,startX,startY,endX,endY):
+    
+    while sum(pict[startY:endY,startX]==0)!=0 and startX>0:
+        startX-=1
+    print(startX)
+    
+    while sum(pict[startY:endY,endX]==0)!=0 and endX<pict.shape[1]-1:
+        endX+=1
+    print(endX)    
+
+    while sum(pict[startY,startX:endX]==0)!=0 and startY>0:
+        startY-=1
+    print(startY)
+    
+    while sum(pict[endY,startX:endX]==0)!=0 and endY<pict.shape[0]-1:
+        endY+=1
+    print(endY)
+    
+    return startX,endX,startY,endY
+    
+
+def MethodeMoy(dilated):
+    tdil=np.transpose(dilated)
+    densityL=sum(tdil==255)/tdil.shape[0]
+    densityC=sum(dilated==255)/dilated.shape[0]
+    moyL=sum(densityL)/sum(densityL>0)
+    moyC=sum(densityC)/sum(densityC>0)
+    print("-----------------------------------------------------------------------------")
+    print(moyL)
+    print(moyC)
+    print("-----------------------------------------------------------------------------")
+    
+    tdil=np.transpose(dilated)
+    densityL=sum(tdil==255)/tdil.shape[0]
+    densityC=sum(dilated==255)/dilated.shape[0]
+    zoneL=[]
+    zonestart=-1
+    for i in range(len(densityL)-1):
+        if densityL[i]>=moyL:
+            if zonestart==-1 :
+                zonestart=i
+            
+        elif zonestart!=-1 and densityL[i]<moyL:
+            zoneL.append([zonestart,i])
+            zonestart=-1
+        
+    if zonestart!=-1:
+        zoneL.append([zonestart,len(densityL)-1])
+    print(zoneL)
+    
+    zoneC=[]
+    zonestart=-1
+    for i in range(len(densityC)-1):
+        if densityC[i]>=moyC:
+            if zonestart==-1 :
+                zonestart=i
+            
+        elif zonestart!=-1 and densityC[i]<moyC:
+            zoneC.append([zonestart,i])
+            zonestart=-1
+        
+    if zonestart!=-1:
+        zoneC.append([zonestart,len(densityC)-1])
+    print(zoneC)
+
+    return zoneL,zoneC
     
 image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -142,7 +248,8 @@ if freqRed >0.2 :
     startX,startY,endX,endY = findCapot(red,freqRed)
     
     img = image[startY:endY,startX:endX]
-
+    cv2.imwrite('subimg.png',img)
+    red= red[startY:endY,startX:endX]
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=8, tileGridSize=(20,20))
     gray = clahe.apply(gray)
@@ -156,16 +263,60 @@ if freqRed >0.2 :
     cv2.imshow("Image", image)
     cv2.waitKey(0)
     
+    # TODO: enlever le bruit issue des bords trop clairs 
+    if sum(binaire[0,:]==0)>3:
+        print("premire ligne")
+    if sum(binaire[-1,:]==0)>3:
+        print("derniere ligne")
+    if sum(binaire[:,0]==0)>3:
+        print("premire colone")
+    if sum(binaire[:,-1]==0)>3:
+        print("derniere colone")
+        
     dilated = locateLogo(binaire)
+    MethodeMoy(dilated)
     zoneL,zoneC=findLogo(dilated)
+    zoneLb,zoneCb=MethodeMoy(dilated)
     
+    for l in zoneLb:
+        for c in zoneCb:
+            propBlancs = sum(sum(dilated[l[0]:l[1],c[0]:c[1]]))
+            if propBlancs>0.5:
+                if isRed(red[l[0]:l[1],c[0]:c[1]])==False:
+                    cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
+                    
+                    #recentre la zone sur le logo (à partir de l'image rouge)
+                    startL,endL,startC,endC = recentre(red[l[0]:l[1],c[0]:c[1]])
+                    cv2.rectangle(img, (c[0]+startC, l[0]+startL), (c[1]+endC, l[1]+endL), (255, 0, 0), 2)
+                    
+                    #agrandi la zone si on trouve toujours des zones non rouges autour
+                    startX,endX,startY,endY = extendArea(red,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
+                    cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
+            
+    cv2.imshow("Image", img)
+    cv2.waitKey(0)
+    logoPosition={}
+    pos=0
     for l in zoneL:
         for c in zoneC:
             propBlancs = sum(sum(dilated[l[0]:l[1],c[0]:c[1]]))
             if propBlancs>0.5:
-                
-                cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
-            
+                if isRed(red[l[0]:l[1],c[0]:c[1]])==False:
+                    cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
+                    
+                    #recentre la zone sur le logo (à partir de l'image rouge)
+                    startL,endL,startC,endC = recentre(red[l[0]:l[1],c[0]:c[1]])
+                    cv2.rectangle(img, (c[0]+startC, l[0]+startL), (c[1]+endC, l[1]+endL), (255, 0, 0), 2)
+                    
+                    #agrandi la zone si on trouve toujours des zones non rouges autour
+                    startX,endX,startY,endY = extendArea(red,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
+                    
+                    #TODO : si c'est au bord ca dégage (marche pas tous le temps)
+                    if startX==0 or startY==0 or endX==red.shape[0]-1 or endY==red.shape[1]-1:
+                        print("AU BORD DONC DEGAGE")
+                    else :
+                        logoPosition[pos]=[startX,startY,endX,endY]
+                        cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
     cv2.imshow("Image", img)
     cv2.waitKey(0)
     
