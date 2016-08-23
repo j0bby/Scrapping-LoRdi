@@ -1,9 +1,10 @@
+ # -*-coding:Latin-1 -*
 from bs4 import BeautifulSoup #parse html
 from urllib.request import urlretrieve
 import requests # GET
-
+import time
 import re  #regex
-
+from descnew import findPatterns
 url = "https://www.leboncoin.fr/informatique/offres/languedoc_roussillon/?th=1&q="
 
 requete = ["lordi","hp%20x360","hp%20360x"]
@@ -57,6 +58,7 @@ for i in ids:
     # obtenir la description
     desc = soup.find('p',{'class':'value'})
     print(desc.get_text(" "))
+    findPatterns(desc.get_text(" "))
     
     #obtenir le titre de l'annonce
     titre = soup.find('h1',{'class':'no-border'})
@@ -90,4 +92,4 @@ for i in ids:
             cpt+=1
             urlretrieve(url, file_name)
     
-    
+    time.sleep(1)
