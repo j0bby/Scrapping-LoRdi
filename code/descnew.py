@@ -78,18 +78,24 @@ def findPatterns(description):
 	if dd is not None:
 		print("Disque dur : "+dd.group())
 	
-	reggraph = 'carte[ ]*graphique[a-z ]*(?P<marque>intel)[ ]*(?P<c1>hd)[ ]*(?P<c2>graphic)?'
+	reggraph = '(carte[ ]*graphique[a-z ]*(?P<marque>intel)[ ]*(?P<c1>hd)?[ ]*(?P<c2>graphic)?)|((?P<marque2>intel)[ ]*((?P<c4>hd[ ]*graphic)|(?P<c5>(hd)|(graphic)))) '
 	graph = re.search(reggraph,description,re.IGNORECASE)
 	if graph is not None:
 		if graph.group('marque') is not None : 
 	   		print("Carte graphique marque : "+ graph.group('marque'))
 		if graph.group('c1') is not None : 
 			print("HD ? : "+graph.group('c1'))
-		if graph.group('c2') is not None : 
+		if graph.group('c2') is not None :
 	   		print("Modele : "+graph.group('c2'))
+		if graph.group('marque2') is not None:
+			print("Carte graphique marque : "+ graph.group('marque2'))
+		if graph.group('c4') is not None:
+			print("Carte graphique detail : "+ graph.group('c4'))
+		if graph.group('c5') is not None:
+			print("Carte graphique detail : "+ graph.group('c5'))
 	#enlever carte graphique ?
 	
-	regecran='[ ,.]+(?P<ecran>ecran[ ]*tactile)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[.,]6[ ]*(pouces?)?)?'
+	regecran='[ ,.]+((?P<ecran>ecran[ ]*(tactile)?)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[., ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[., ]*6[ ]*((pouces?)|"))?)'
 	ecr = re.search(regecran,description,re.IGNORECASE)
 	if ecr is not None:
 		if ecr.group('ecran') is not None:
@@ -98,4 +104,7 @@ def findPatterns(description):
 			print("HD ? "+ecr.group('c1'))
 		if ecr.group('c2') is not None:
 			print("Taille : "+ecr.group('c2'))
-	
+		if ecr.group('c3') is not None:
+			print("HD ? "+ecr.group('c3'))
+		if ecr.group('c4') is not None:
+			print("Taille : "+ecr.group('c4'))

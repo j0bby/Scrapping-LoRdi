@@ -64,6 +64,9 @@ for i in ids:
     titre = soup.find('h1',{'class':'no-border'})
     titre = titre.get_text()
     print(titre)
+    print('-'*10)
+    print("recherche dans titre")
+    findPatterns(titre)
     #obtenir les images 
     img_urls =[]
     
