@@ -23,7 +23,7 @@ def findPatterns(description):
 	        
 	description=' '.join([word for word in description.split() if word not in stopwords])
 	#print(description)
-	
+	score = 0
 	
 	
 	regmarquemodele = '(?P<marque>hp)[ ]*(?P<divers>[a-z]*)[ ]*(?P<modele>x[ ]*360)[ ]*(?P<modadd>310)?'
@@ -31,31 +31,39 @@ def findPatterns(description):
 	if marquemodele is not None:
 		if marquemodele.group('marque') is not None:
 			print("Marque : "+marquemodele.group('marque'))
+			score +=17
 		if marquemodele.group('divers') is not None:
 			print("Marque divers : "+marquemodele.group('divers'))
+			score+=15
 		if marquemodele.group('modele') is not None:
 			print("Modele : "+marquemodele.group('modele'))
+			score+=15
 		if marquemodele.group('modadd') is not None: 
 			print("Modele info " + marquemodele.group('modadd'))
+			score +=3
 	
 	#regproc = 'intel[ ]*(pentium)?[ ]*n?[ ]*3540'
 	regproc ='[ .,]+intel [ ]*([a-z, ]*n?3540|pentium[ ]*n?[ ]*(3540)?)'
 	proc = re.search(regproc,description,re.IGNORECASE)
 	if proc is not None:
 		print("Processeur : "+proc.group())
+		score+=8
 	
 	regfreqproc= '[ .,]+2[., ]+66[ ]*ghz'
 	freqproc=re.search(regfreqproc,description,re.IGNORECASE)
 	if freqproc is not None:
 		print("Frequence processeur : "+freqproc.group())
-	
+		score+=3
+
 	regos='(?P<os>w(indows)?)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista|xp))?(?P<type>[ ]*pro|familial|n)?'
 	os = re.search(regos,description,re.IGNORECASE)
 	if os is not None:
 		if os.group('os') is not None:
 			print("OS : "+os.group('os'))
+			score+=8
 		if os.group('num') is not None:
 			print("Version : "+os.group('num'))
+			score+=8
 		if os.group('type') is not None:
 	   		print("Type"+os.group('type'))
 	   # print(re.search(regos,description,re.IGNORECASE))
@@ -65,22 +73,24 @@ def findPatterns(description):
 	arch = re.search(regarch,description,re.IGNORECASE)
 	if arch is not None:
 		print("Architecture : "+arch.group())
-	
+		score+=3
 	regram = '[ .,]+4[ ]*gi?[ob][ ]*(ddr3)?[a-z ]*[ ]*(sd)?ram'
 	ram = re.search(regram,description,re.IGNORECASE)
 	if ram is not None:
 		print("Memoire ram "+ram.group())
-	
+		score+=7
 	
 	regdd = '[ .,]+256[ ]*gi?[ob][a-z ]*(ssd)?'
 	#chercher également avec '[ .,]ssd[a-z ]256[ ]*gi?[ob]' ?
 	dd=re.search(regdd,description,re.IGNORECASE)
 	if dd is not None:
 		print("Disque dur : "+dd.group())
-	
+		score+=7
+
 	reggraph = '(carte[ ]*graphique[a-z ]*(?P<marque>intel)[ ]*(?P<c1>hd)?[ ]*(?P<c2>graphic)?)|((?P<marque2>intel)[ ]*((?P<c4>hd[ ]*graphic)|(?P<c5>(hd)|(graphic)))) '
 	graph = re.search(reggraph,description,re.IGNORECASE)
 	if graph is not None:
+		score+=15
 		if graph.group('marque') is not None : 
 	   		print("Carte graphique marque : "+ graph.group('marque'))
 		if graph.group('c1') is not None : 
@@ -98,6 +108,7 @@ def findPatterns(description):
 	regecran='[ ,.]+((?P<ecran>ecran[ ]*(tactile)?)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[., ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[., ]*6[ ]*((pouces?)|"))?)'
 	ecr = re.search(regecran,description,re.IGNORECASE)
 	if ecr is not None:
+		score+=10
 		if ecr.group('ecran') is not None:
 			print("Ecran : "+ecr.group('ecran'))
 		if ecr.group('c1') is not None:
@@ -108,3 +119,6 @@ def findPatterns(description):
 			print("HD ? "+ecr.group('c3'))
 		if ecr.group('c4') is not None:
 			print("Taille : "+ecr.group('c4'))
+
+	print("-"*100)
+	print("score : ",score)
