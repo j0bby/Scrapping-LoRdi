@@ -26,7 +26,7 @@ def findPatterns(description):
 	score = 0
 	
 	
-	regmarquemodele = '(?P<marque>hp)[ ]*(?P<divers>[a-z]*)[ ]*(?P<modele>x[ ]*360)[ ]*(?P<modadd>310)?'
+	regmarquemodele = '(?P<marque>hp)[ ]*(?P<divers>[a-z]*)[ ]*(?P<modele>(x[ ]*360)|(360[ ]*x))[ ]*(?P<modadd>310)?'
 	marquemodele = re.search(regmarquemodele,description,re.IGNORECASE)
 	if marquemodele is not None:
 		if marquemodele.group('marque') is not None:
@@ -55,7 +55,7 @@ def findPatterns(description):
 		print("Frequence processeur : "+freqproc.group())
 		score+=3
 
-	regos='(?P<os>w(indows)?)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista|xp))?(?P<type>[ ]*pro|familial|n)?'
+	regos='(?P<os>windows)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista|xp))(?P<type>[ ]*pro|familial|n)?'
 	os = re.search(regos,description,re.IGNORECASE)
 	if os is not None:
 		if os.group('os') is not None:
@@ -105,7 +105,7 @@ def findPatterns(description):
 			print("Carte graphique detail : "+ graph.group('c5'))
 	#enlever carte graphique ?
 	
-	regecran='[ ,.]+((?P<ecran>ecran[ ]*(tactile)?)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[., ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[., ]*6[ ]*((pouces?)|"))?)'
+	regecran='[ ,.]+((?P<ecran>ecran[ ]*(tactile)?)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[., ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[., ]*6[ ]*((pouces?)|")))'
 	ecr = re.search(regecran,description,re.IGNORECASE)
 	if ecr is not None:
 		score+=10
@@ -119,6 +119,16 @@ def findPatterns(description):
 			print("HD ? "+ecr.group('c3'))
 		if ecr.group('c4') is not None:
 			print("Taille : "+ecr.group('c4'))
-
+	reghousse='([ ]*housse)'
+	housse = re.search(reghousse,description,re.IGNORECASE)
+	if housse is not None:
+		print("Housse ? "+housse.group())
+		score+=7
+	reglordi='([ ]lordi)'
+	lordi = re.search(reglordi,description,re.IGNORECASE)
+	if lordi is not None:
+		print("Lordi ? "+lordi.group())
+		score+=20
+	
 	print("-"*100)
 	print("score : ",score)

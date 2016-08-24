@@ -2,41 +2,47 @@
 
 OS : windows
 Version : 81
+-> Pas vraiment une erreur, on filtre tous les points au début
 
 2) HP X360
 Marque : hp
 Marque divers : 
 Modele : x360
+-> Erreur parce que c'est pas en Marque divers ? Ou parce que ça affiche marque divers sans rien ? 
 
 3) ... z, 17W) ...  webcam, ... windows 7 professionnel 64 bits
 
 OS : w
 Version :
 Architecture :  64 bits
+-> La regex etait un peu trop large car c'était un w(indows)? pour permettre le format w7, éventuellement à remettresi tu le sens, j'ai mis uneobligation sur le modèle pour pouvoir revenir à ce format éventuellement
 
 4) recherche dans titre
 ----------------------------------------------------------------------------------------------------
 score :  10
+-> Erreur dans regex ecran, corrigé
 
 5)  de marque HP ... Pavilion 11 x360 (aussi connu sous la référence 11-n01nf)
 
 pas détecté 
-
+-> TODO, à voir pour faire une regex qui détecte indépendemment marque et modèle, cas à prendre en compte x360 seul Pavillon seul avec possiblement faute (pavillion), les deux en même temps les deux en même temps mais séparés par un mot.. Important je pense
 6) Dispose d'une housse
-
 à rajouter
-
+-> Fait, regex simple, à voir si besoin de plus
 7)  HP Pavilion 360x
-                
+-> ajout modele est x360 ou 360x                
                                 
                         
 ----------
 recherche dans titre
 ----------------------------------------------------------------------------------------------------
 score :  10
+->corrigé cf plus haut
 
 8) rajouter détection du mot lordi 
+-> Fait, regex simple, à voir si besoin de plus
 
 9) rajouter détection de l'audio 
-
+->TODO, faut que je récup les infos 
 10) Il faut différencier les informations qui sont présentes et pas en conformité (genre points en moins ou un truc du genre), des infos qui ne sont pas présentes 
+->TODO, faut que je récup les infos
