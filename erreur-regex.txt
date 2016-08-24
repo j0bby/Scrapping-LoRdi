@@ -1,0 +1,42 @@
+1)  windows 8.1
+
+OS : windows
+Version : 81
+
+2) HP X360
+Marque : hp
+Marque divers : 
+Modele : x360
+
+3) ... z, 17W) ...  webcam, ... windows 7 professionnel 64 bits
+
+OS : w
+Version :
+Architecture :  64 bits
+
+4) recherche dans titre
+----------------------------------------------------------------------------------------------------
+score :  10
+
+5)  de marque HP ... Pavilion 11 x360 (aussi connu sous la référence 11-n01nf)
+
+pas détecté 
+
+6) Dispose d'une housse
+
+à rajouter
+
+7)  HP Pavilion 360x
+                
+                                
+                        
+----------
+recherche dans titre
+----------------------------------------------------------------------------------------------------
+score :  10
+
+8) rajouter détection du mot lordi 
+
+9) rajouter détection de l'audio 
+
+10) Il faut différencier les informations qui sont présentes et pas en conformité (genre points en moins ou un truc du genre), des infos qui ne sont pas présentes 
