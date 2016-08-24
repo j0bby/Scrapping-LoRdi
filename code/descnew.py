@@ -55,7 +55,7 @@ def findPatterns(description):
 		print("Frequence processeur : "+freqproc.group())
 		score+=3
 
-	regos='(?P<os>windows)[ ](?P<num>([0-9]*([.,][0-9]*)?|vista|xp))(?P<type>[ ]*pro|familial|n)?'
+	regos='(?P<os>w(indows)?)[ ]?(?P<num>[0-9]{1,2}|vista|xp)[ ](?P<type>[ ]*pro|familial|n)?'
 	os = re.search(regos,description,re.IGNORECASE)
 	if os is not None:
 		if os.group('os') is not None:
