@@ -28,34 +28,43 @@ def findPatterns(description):
 	
 	regmarquemodele = '(?P<marque>hp)[ ]*(?P<divers>[a-z]*)[ ]*(?P<modele>(x[ ]*360)|(360[ ]*x))[ ]*(?P<modadd>310)?'
 	marquemodele = re.search(regmarquemodele,description,re.IGNORECASE)
-	if marquemodele is not None:
+	if marquemodele is not None:#les groupes marque et modele sont obligatoires si la regex est trouvée
 		if marquemodele.group('marque') is not None:
 			print("Marque : "+marquemodele.group('marque'))
-			score +=17
+			score +=25
 		if marquemodele.group('divers') is not None:
-			print("Marque divers : "+marquemodele.group('divers'))
-			score+=15
+			if marquemodele.group('divers'):
+				print("Marque divers : "+marquemodele.group('divers'))
 		if marquemodele.group('modele') is not None:
 			print("Modele : "+marquemodele.group('modele'))
-			score+=15
+			score+=20
 		if marquemodele.group('modadd') is not None: 
 			print("Modele info " + marquemodele.group('modadd'))
-			score +=3
+			if marquemodele.group('modadd'):	
+				score +=10
+			else:
+				score-=5
+	else:
+		score-=22
 	
 	#regproc = 'intel[ ]*(pentium)?[ ]*n?[ ]*3540'
-	regproc ='[ .,]+intel [ ]*([a-z, ]*n?3540|pentium[ ]*n?[ ]*(3540)?)'
+	regproc ='intel [ ]*([a-z, ]*n?3540|pentium[ ]*n?[ ]*(3540)?)'
 	proc = re.search(regproc,description,re.IGNORECASE)
 	if proc is not None:
 		print("Processeur : "+proc.group())
 		score+=8
+	else
+		score-=4
 	
-	regfreqproc= '[ .,]+2[., ]+66[ ]*ghz'
+	regfreqproc= '([ .,]+2[., ]+66[ ]*ghz)'
 	freqproc=re.search(regfreqproc,description,re.IGNORECASE)
 	if freqproc is not None:
 		print("Frequence processeur : "+freqproc.group())
 		score+=3
+	else
+		score-=1
 
-	regos='(?P<os>w(indows)?)[ ]?(?P<num>[0-9]{1,2}|vista|xp)[ ](?P<type>[ ]*pro|familial|n)?'
+	regos='(?P<os>w(indows)?)[ ]?(?P<num>[0-9]{1,2}|vista|xp)[ ]*(?P<type>[ ]*pro|familial|n)?'
 	os = re.search(regos,description,re.IGNORECASE)
 	if os is not None:
 		if os.group('os') is not None:
@@ -63,10 +72,20 @@ def findPatterns(description):
 			score+=8
 		if os.group('num') is not None:
 			print("Version : "+os.group('num'))
-			score+=8
+			if (os.group('num') == "8") or (os.group('num') == "81" :
+				score+=15
+			else:
+				score-=8
 		if os.group('type') is not None:
 	   		print("Type"+os.group('type'))
-	   # print(re.search(regos,description,re.IGNORECASE))
+			if 'pro' in os.group('type'):
+				score +=7
+			else:
+				score-=3
+		else:
+			score-=3
+	else:
+		score-=15
 	#peu être un peu trop large vu que w8 marche, laisser indows obligatoire ?
 	
 	regarch = '[ .,]+64[ ]*bit(s)?'
@@ -129,6 +148,10 @@ def findPatterns(description):
 	if lordi is not None:
 		print("Lordi ? "+lordi.group())
 		score+=20
-	
+	regaudio='([ ]beats?[ ]*audio)'
+	audio = re.search(regaudio,description,re.IGNORECASE)
+	if audio is not None:
+		print("Audio : "+audio.group())
+		score+=7
 	print("-"*100)
 	print("score : ",score)

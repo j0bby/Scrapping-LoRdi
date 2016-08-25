@@ -5,7 +5,7 @@ Marque divers :
 Modele : x360
 -> Erreur parce que c'est pas en Marque divers ? Ou parce que ça affiche marque divers sans rien ? 
 -> divers sans rien 
-
+-> Corrigé normalement
 
 5)  de marque HP ... Pavilion 11 x360 (aussi connu sous la référence 11-n01nf)
 
@@ -14,6 +14,24 @@ pas détecté
 
 9) rajouter détection de l'audio 
 ->TODO, faut que je récup les infos 
-
+->mot clé ajouté : beatsaudio, il en faut plus ?
 10) Il faut différencier les informations qui sont présentes et pas en conformité (genre points en moins ou un truc du genre), des infos qui ne sont pas présentes 
 ->TODO, faut que je récup les infos
+infos considérées comme bonnes avec score, si l'info n'est pas présente ou fausse on enlève la moitié du score: 
+regex modele : 
+	marque : hp +25 
+	modele : x360 +20
+	modadd : 310 +6
+regex proc :
+	intel pentium n3540 +8
+regex frequence processeur : 
+	2,66ghz +3
+regex os :
+	os : windows +8
+	numero : 8/81 +15
+	type : pro +7
+
+
+
+
+->TODO ameliorer regex processeur et adapter les scores en consquence
