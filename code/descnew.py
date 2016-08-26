@@ -24,8 +24,22 @@ def findPatterns(description):
 	description=' '.join([word for word in description.split() if word not in stopwords])
 	#print(description)
 	score = 0
-	
-	
+
+	marque = 'hp|dell|lenovo|asus'
+	pavillon = 'pavill?i?on'
+	modele = '(x360|360x)[ ]*(310)?[ ]*g[12]'
+	processeur = '(pentium|celeron|i[357])[ ]*(n[0-9]*)?'
+	typedisc = 'ssd'
+	tailledisc = '[0-9]*[ ]*gi?[ob]'
+	ordinateur = 'ordinateur|pc|portable|tablette'
+	convertible= 'convertible|2 en 1|chevalet'
+	tactile = 'tactile'
+	lycee = 'lycee'
+	facture = '(?P<neg>pas|sans|aucune)?[ ]*facture'
+	offert = 'off?erts?[ ]*etudes?'
+	plusbesoin = 'plus besoin'
+	batterie = 'batt?e?rie' #si dans le titre = pièce détaché : méfiance extrême
+ 
 	regmarquemodele = '(?P<marque>hp)[ ]*(?P<divers>[a-z]*)[ ]*(?P<modele>(x[ ]*360)|(360[ ]*x))[ ]*(?P<modadd>310)?'
 	marquemodele = re.search(regmarquemodele,description,re.IGNORECASE)
 	if marquemodele is not None:#les groupes marque et modele sont obligatoires si la regex est trouvée
