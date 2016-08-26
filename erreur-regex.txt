@@ -15,8 +15,57 @@ pas détecté
 9) rajouter détection de l'audio 
 ->TODO, faut que je récup les infos 
 ->mot clé ajouté : beatsaudio, il en faut plus ?
+
 10) Il faut différencier les informations qui sont présentes et pas en conformité (genre points en moins ou un truc du genre), des infos qui ne sont pas présentes 
 ->TODO, faut que je récup les infos
+
+11) 
+1010205281
+Bonjour,  je vends mon ordinateur portable (offert pour mes etudes) car j'en ai plus l'utilité je l'utilisé pour le lycee mais je me lance dans des stages 
+pour trouver jn emploie rapidement maintenant...  Ecran tactile, peut etre utiliser en mode tablette.  
+Processeur intel inside pentium  Audio Beats audio Il est en tres bon état de fonctionnement . 
+je le vend 140Euro(s)... C'est un tres bon prix si vous voulez mon avis... Je le vends SANS son chargeur, l'ordinateur uniquement. 
+Prix a debattre dans la limite du raisonable.  Merci. :)
+
+Ecran : ecran tactile
+Audio :  beats audio
+
+pas de detection du proc
+rajouter détection de offert pour mes études, lycée et autre infos qui peuvent traduire que c'est un Lordi. 
+
+12) 
+Pc portable tactile HP
+                                 
+----------
+recherche dans titre
+----------------------------------------------------------------------------------------------------
+score :  -46
+
+13) Ecran de 11, 6 pouce
+Ecran tactile HD UWVA de 11,6" 
+
+pas détecté le 11,6 
+
+14) 
+Bonjour, je vend mon ordinateur UP x360 en bon état à débattre  Je le vend car je n'en ai plus besoin  Je voudrais en obtenir 160€ Veuillez me contacter sur mon téléphone si intéressé  06-37-13-48-00
+----------------------------------------------------------------------------------------------------
+score :  -46
+
+on y peut rien mais bon ^^ peut être changer de manière de détecter. Repérer des mots uniques, et ensuite essayer de les lier si ils ont un lien entre eux.
+
+15) Processeur :  Intel® Pentium® N3520
+
+pas detecté
+
+16)  Ordinateur HP x360 310 G1 (Tablette 2en1)
+
+rajouter g1 ou 2 
+
+17) Sacoche Lordi
+
+rajouter la détection du mot sacoche, pochette 
+
+
 infos considérées comme bonnes avec score, si l'info n'est pas présente ou fausse on enlève la moitié du score: 
 regex modele : 
 	marque : hp +25 

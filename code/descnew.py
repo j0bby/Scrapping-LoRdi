@@ -142,7 +142,7 @@ def findPatterns(description):
 			print("Carte graphique detail : "+ graph.group('c5'))
 
 	
-	regecran='[ ,.]+((?P<ecran>ecran[ ]*(tactile)?)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[., ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[., ]*6[ ]*((pouces?)|")))'
+	regecran='((?P<ecran>ecran[ ]*(tactile)?)[ ]*(?P<c1>hd)?[ ]*(?P<c2>11[ ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[ ]*6[ ]*((pouces?)|")))'
 	ecr = re.search(regecran,description,re.IGNORECASE)
 	if ecr is not None:
 		score+=10
