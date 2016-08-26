@@ -48,7 +48,7 @@ def findPatterns(description):
 		score-=22
 	
 	#regproc = 'intel[ ]*(pentium)?[ ]*n?[ ]*3540'
-	regproc ='intel [ ]*([a-z, ]*n?3540|pentium[ ]*n?[ ]*(3540)?)'
+	regproc ='intel[ ]*(inside)?[ ]*(?P<type>pentium|celeron)[ ]*(n3540)?'
 	proc = re.search(regproc,description,re.IGNORECASE)
 	if proc is not None:
 		print("Processeur : "+proc.group())
@@ -142,7 +142,8 @@ def findPatterns(description):
 			print("Carte graphique detail : "+ graph.group('c5'))
 
 	
-	regecran='((?P<ecran>ecran[ ]*(tactile)?)[ ]*(?P<c1>hd)?[ ]*(?P<c2>11[ ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[ ]*6[ ]*((pouces?)|")))'
+	#regecran='((?P<ecran>ecran[ ]*(tactile)?)[ ]*(?P<c1>hd)?[ ]*(?P<c2>11[ ]*6[ ]*(pouces?|")?)|((?P<c3>hd)?[ ]*(?P<c4>11[ ]*6[ ]*((pouces?)|")))'
+	regecran='(?P<ecran>ecran[ ]*(tactile)?)[ ]*(?P<c1>hd)?[ ]*[a-z]*[ ]*(?P<c2>11[ ]*6[ ])?'
 	ecr = re.search(regecran,description,re.IGNORECASE)
 	if ecr is not None:
 		score+=10
@@ -156,17 +157,17 @@ def findPatterns(description):
 			print("HD ? "+ecr.group('c3'))
 		if ecr.group('c4') is not None:
 			print("Taille : "+ecr.group('c4'))
-	reghousse='([ ]*housse)'
+	reghousse='(housse|sacc?oche|pochette)'
 	housse = re.search(reghousse,description,re.IGNORECASE)
 	if housse is not None:
 		print("Housse ? "+housse.group())
 		score+=7
-	reglordi='([ ]lordi)'
+	reglordi='(^|[ ])lordi)'
 	lordi = re.search(reglordi,description,re.IGNORECASE)
 	if lordi is not None:
 		print("Lordi ? "+lordi.group())
 		score+=20
-	regaudio='([ ]beats?[ ]*audio)'
+	regaudio='(beats?[ ]*audio)'
 	audio = re.search(regaudio,description,re.IGNORECASE)
 	if audio is not None:
 		print("Audio : "+audio.group())
