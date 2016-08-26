@@ -30,8 +30,28 @@ regex os :
 	os : windows +8
 	numero : 8/81 +15
 	type : pro +7
+regex architecture : 
+	64bits : +3
+regex ram : 
+	4go ram : +7
+regex disque dur : 
+	taille : 256go +7
+	ssd : +4
+regex carte graphique : 
+	scores à définir
+regex ecran : 
+	scores à définir
+	11.6 pouces
+housse
+	+7 (pas de négatif)
+lordi
+	+20 (pas de négatif)
+audio
+	beats audio +7 (pas de négatif)
 
 
 
 
 ->TODO ameliorer regex processeur et adapter les scores en consquence
+
+->TODO faire une fonction qui prend le titre et la description et qui fait une recherche combinée pour éviter d'avoir deux recherches à faire

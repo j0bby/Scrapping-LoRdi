@@ -53,15 +53,15 @@ def findPatterns(description):
 	if proc is not None:
 		print("Processeur : "+proc.group())
 		score+=8
-	else
+	else : 
 		score-=4
 	
-	regfreqproc= '([ .,]+2[., ]+66[ ]*ghz)'
+	regfreqproc= '(2[ ]*66[ ]*ghz)'
 	freqproc=re.search(regfreqproc,description,re.IGNORECASE)
 	if freqproc is not None:
 		print("Frequence processeur : "+freqproc.group())
 		score+=3
-	else
+	else : 
 		score-=1
 
 	regos='(?P<os>w(indows)?)[ ]?(?P<num>[0-9]{1,2}|vista|xp)[ ]*(?P<type>[ ]*pro|familial|n)?'
@@ -72,12 +72,12 @@ def findPatterns(description):
 			score+=8
 		if os.group('num') is not None:
 			print("Version : "+os.group('num'))
-			if (os.group('num') == "8") or (os.group('num') == "81" :
+			if (os.group('num') == "8") or (os.group('num') == "81") :
 				score+=15
 			else:
 				score-=8
 		if os.group('type') is not None:
-	   		print("Type"+os.group('type'))
+			print("Type"+os.group('type'))
 			if 'pro' in os.group('type'):
 				score +=7
 			else:
@@ -86,27 +86,45 @@ def findPatterns(description):
 			score-=3
 	else:
 		score-=15
-	#peu être un peu trop large vu que w8 marche, laisser indows obligatoire ?
 	
-	regarch = '[ .,]+64[ ]*bit(s)?'
+	regarch = '64[ ]*bit(s)?'
 	arch = re.search(regarch,description,re.IGNORECASE)
 	if arch is not None:
 		print("Architecture : "+arch.group())
-		score+=3
-	regram = '[ .,]+4[ ]*gi?[ob][ ]*(ddr3)?[a-z ]*[ ]*(sd)?ram'
+		if '64' in arch.group(): 
+			score+=3
+		else :
+			score-=2
+	else:
+		score-=1
+	regram = '(4[ ]*gi?[ob][ ]*(ddr3)?[ ]*(sd)?ram)'
 	ram = re.search(regram,description,re.IGNORECASE)
 	if ram is not None:
-		print("Memoire ram "+ram.group())
+		print("Memoire ram "+ram.group(1))
 		score+=7
+	else: 
+		score-=3
 	
-	regdd = '[ .,]+256[ ]*gi?[ob][a-z ]*(ssd)?'
-	#chercher également avec '[ .,]ssd[a-z ]256[ ]*gi?[ob]' ?
+	
+	regdd = '(?P<ssd1>ssd)?[ ]*(?P<taille>[0-9]{3}[ ]*gi?[ob])[ ]*(?P<ssd>ssd)?'
 	dd=re.search(regdd,description,re.IGNORECASE)
 	if dd is not None:
-		print("Disque dur : "+dd.group())
-		score+=7
+		print("Taille disque dur : "+dd.group('taille'))
+		if dd.group('ssd1') is not None : 
+			print('ssd ? : '+dd.group('ssd1'))
+			score+=4
+		elif dd.group('ssd') is not None : 
+			print('ssd ? : '+dd.group('ssd'))
+			score+=4
+		else : 
+			score-=2
+		if '256' in dd.group('taille'):
+			score+=7
+		else :
+			score-=4
 
-	reggraph = '(carte[ ]*graphique[a-z ]*(?P<marque>intel)[ ]*(?P<c1>hd)?[ ]*(?P<c2>graphic)?)|((?P<marque2>intel)[ ]*((?P<c4>hd[ ]*graphic)|(?P<c5>(hd)|(graphic)))) '
+
+	reggraph = '(carte[ ]*graphique[a-z ]*(?P<marque>intel)[ ]*(?P<c1>hd)?[ ]*(?P<c2>graphic)?)|((?P<marque2>intel)[ ]*((?P<c4>hd[ ]*graphic)|(?P<c5>(hd)|(graphic))))'
 	graph = re.search(reggraph,description,re.IGNORECASE)
 	if graph is not None:
 		score+=15
@@ -122,7 +140,7 @@ def findPatterns(description):
 			print("Carte graphique detail : "+ graph.group('c4'))
 		if graph.group('c5') is not None:
 			print("Carte graphique detail : "+ graph.group('c5'))
-	#enlever carte graphique ?
+
 	
 	regecran='[ ,.]+((?P<ecran>ecran[ ]*(tactile)?)[ ,]*(?P<c1>hd)?[ ]*(?P<c2>11[., ]*6[ ]*((pouces?)|")?)?)|((?P<c3>hd)?[ ]*(?P<c4>11[., ]*6[ ]*((pouces?)|")))'
 	ecr = re.search(regecran,description,re.IGNORECASE)
