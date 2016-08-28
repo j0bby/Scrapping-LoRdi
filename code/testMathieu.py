@@ -192,19 +192,22 @@ def isRed(img):
     
 def extendArea(pict,startX,startY,endX,endY):
     
-    while sum(pict[startY:endY,startX]==0)!=0 and startX>0:
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (4,4))
+    pict = cv2.dilate(pict, kernel, iterations = 1)
+    
+    while sum(pict[startY:endY,startX]==255)!=0 and startX>0:
         startX-=1
     print(startX)
     
-    while sum(pict[startY:endY,endX]==0)!=0 and endX<pict.shape[1]-1:
+    while sum(pict[startY:endY,endX]==255)!=0 and endX<pict.shape[1]-1:
         endX+=1
     print(endX)    
 
-    while sum(pict[startY,startX:endX]==0)!=0 and startY>0:
+    while sum(pict[startY,startX:endX]==255)!=0 and startY>0:
         startY-=1
     print(startY)
     
-    while sum(pict[endY,startX:endX]==0)!=0 and endY<pict.shape[0]-1:
+    while sum(pict[endY,startX:endX]==255)!=0 and endY<pict.shape[0]-1:
         endY+=1
     print(endY)
     
@@ -256,8 +259,8 @@ def MethodeMoy(dilated):
     print(zoneC)
 
     return zoneL,zoneC
-    
-image = cv2.imread("..\\Exemple-annonces\\oo4.jpg")
+
+image = cv2.imread("..\\Exemple-annonces\\oo21.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) 
@@ -270,26 +273,48 @@ nbRed=sum(sum(red ==255))
 freqRed=nbRed/(red.shape[1]*red.shape[0])
 print(freqRed)
 
-if freqRed >0.2 :
+if freqRed >0.15 :
     if freqRed>0.8:
         print("Care, background Red")
     else :
         print("Red computer")
+    #réduit au capot de l'ordi (rotation pour récupérer bien)
     startX,startY,endX,endY, angle = findCapot(red,freqRed)
+    
+    #réduit image normale
     image= rotateImage(image,angle)
     img = image[startY:endY,startX:endX]
-    cv2.imwrite('subimg.png',img)
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.bilateralFilter(gray, 11, 17, 17)
+    edged = cv2.Canny(gray, 30, 200)
+    cv2.imshow("Image", edged)
+    cv2.waitKey(0)
+    
+    #réduit le red
     red = rotateImage(red,angle)
     red= red[startY:endY,startX:endX]
+    
+    #traitement homogénéisation lumière
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=8, tileGridSize=(20,20))
     gray = clahe.apply(gray)
     cv2.fastNlMeansDenoising(gray,gray,30,41,61)
     cv2.imshow("Image", gray)
     cv2.waitKey(0)
+    
+    
+    edged = cv2.bilateralFilter(gray, 11, 17, 17)
+    edged = cv2.Canny(edged, 30, 200)
+    cv2.imshow("Image", edged)
+    cv2.waitKey(0)
+    
+    #binarisation
     _,binaire = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
     plt.imshow(binaire,'gray')
     plt.show()
+    
+    #affiche ou est le capot
     cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
     cv2.imshow("Image", image)
     cv2.waitKey(0)
@@ -304,7 +329,7 @@ if freqRed >0.2 :
     if sum(binaire[:,-1]==0)>3:
         print("derniere colone")
         
-    dilated = locateLogo(binaire)
+    dilated = locateLogo(edged)
     MethodeMoy(dilated)
     zoneL,zoneC=findLogo(dilated)
     zoneLb,zoneCb=MethodeMoy(dilated)
@@ -321,35 +346,35 @@ if freqRed >0.2 :
                     cv2.rectangle(img, (c[0]+startC, l[0]+startL), (c[1]+endC, l[1]+endL), (255, 0, 0), 2)
                     
                     #agrandi la zone si on trouve toujours des zones non rouges autour
-                    startX,endX,startY,endY = extendArea(red,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
+                    startX,endX,startY,endY = extendArea(edged,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
                     cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
             
     cv2.imshow("Image", img)
     cv2.waitKey(0)
-    logoPosition={}
-    pos=0
-    for l in zoneL:
-        for c in zoneC:
-            propBlancs = sum(sum(dilated[l[0]:l[1],c[0]:c[1]]))
-            if propBlancs>0.5:
-                if isRed(red[l[0]:l[1],c[0]:c[1]])==False:
-                    cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
-                    
-                    #recentre la zone sur le logo (à partir de l'image rouge)
-                    startL,endL,startC,endC = recentre(red[l[0]:l[1],c[0]:c[1]])
-                    cv2.rectangle(img, (c[0]+startC, l[0]+startL), (c[1]+endC, l[1]+endL), (255, 0, 0), 2)
-                    
-                    #agrandi la zone si on trouve toujours des zones non rouges autour
-                    startX,endX,startY,endY = extendArea(red,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
-                    
-                    #TODO : si c'est au bord ca dégage (marche pas tous le temps)
-                    if startX==0 or startY==0 or endX==red.shape[0]-1 or endY==red.shape[1]-1:
-                        print("AU BORD DONC DEGAGE")
-                    else :
-                        logoPosition[pos]=[startX,startY,endX,endY]
-                        cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
-    cv2.imshow("Image", img)
-    cv2.waitKey(0)
+#    logoPosition={}
+#    pos=0
+#    for l in zoneL:
+#        for c in zoneC:
+#            propBlancs = sum(sum(dilated[l[0]:l[1],c[0]:c[1]]))
+#            if propBlancs>0.5:
+#                if isRed(red[l[0]:l[1],c[0]:c[1]])==False:
+#                    cv2.rectangle(img, (c[0], l[0]), (c[1], l[1]), (0, 255, 0), 2)
+#                    
+#                    #recentre la zone sur le logo (à partir de l'image rouge)
+#                    startL,endL,startC,endC = recentre(red[l[0]:l[1],c[0]:c[1]])
+#                    cv2.rectangle(img, (c[0]+startC, l[0]+startL), (c[1]+endC, l[1]+endL), (255, 0, 0), 2)
+#                    
+#                    #agrandi la zone si on trouve toujours des zones non rouges autour
+#                    startX,endX,startY,endY = extendArea(red,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
+#                    
+#                    #TODO : si c'est au bord ca dégage (marche pas tous le temps)
+#                    if startX==0 or startY==0 or endX==red.shape[0]-1 or endY==red.shape[1]-1:
+#                        print("AU BORD DONC DEGAGE")
+#                    else :
+#                        logoPosition[pos]=[startX,startY,endX,endY]
+#                        cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
+#    cv2.imshow("Image", img)
+#    cv2.waitKey(0)
     
 elif freqRed>0.05 :
     print("Some Red")
