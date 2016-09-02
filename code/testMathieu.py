@@ -1,8 +1,9 @@
 import numpy as np
 import cv2
-from scipy import ndimage
+
 import matplotlib.pyplot as plt
 import math
+import imutils
 
 def adjust_gamma(image, gamma=1.0):
     invGamma = 1.0 / gamma
@@ -163,10 +164,10 @@ def recentre (pict):
     
     startC=0
     endC=-1
-    while densityC[startC]==0:
+    while startC<len(densityC) and densityC[startC]==0  :
         startC+=1
     
-    while densityC[endC]==0:
+    while endC>startC-len(densityC) and densityC[endC]==0  :
         endC-=1
         
     print(startC)
@@ -174,10 +175,10 @@ def recentre (pict):
     
     startL=0
     endL=-1
-    while densityL[startL]==0:
+    while startL<len(densityL) and densityL[startL]==0:
         startL+=1
     
-    while densityL[endL]==0:
+    while endL>startL-len(densityL) and densityL[endL]==0:
         endL-=1
         
     print(startL)
@@ -259,8 +260,42 @@ def MethodeMoy(dilated):
     print(zoneC)
 
     return zoneL,zoneC
+    
+    
+def getOutside(zones):
+    #TODO : améliorer cette méthode
 
-image = cv2.imread("..\\Exemple-annonces\\oo21.jpg")
+    for partie in range(len(zones)) : 
+            for k in range(len(zones)) :
+                if k!=partie:
+                    if isInside(zones[partie][0],zones[partie][2],zones[partie][1],zones[partie][3],zones[k][0],zones[k][2])==True and isInside(zones[partie][0],zones[partie][2],zones[partie][1],zones[partie][3],zones[k][1],zones[k][3])==True :
+                        print("inside")
+                        zones[k]=[0,0,0,0]
+                        
+                    elif isInside(zones[partie][0],zones[partie][2],zones[partie][1],zones[partie][3],zones[k][0],zones[k][2])==True and isInside(zones[partie][0],zones[partie][2],zones[partie][1],zones[partie][3],zones[k][1],zones[k][3])==False :
+                        print("prems")                        
+                        zones[partie][1]=zones[k][1]
+                        zones[partie][3]=zones[k][3]
+                        zones[k]=[0,0,0,0]
+                    elif isInside(zones[partie][0],zones[partie][2],zones[partie][1],zones[partie][3],zones[k][0],zones[k][2])==False and isInside(zones[partie][0],zones[partie][2],zones[partie][1],zones[partie][3],zones[k][1],zones[k][3])==True :
+                        print("sec")                        
+                        zones[partie][0]=zones[k][0]
+                        zones[partie][2]=zones[k][2]
+                        zones[k]=[0,0,0,0]
+    ret =[]
+    for k in zones:
+        if k != [0,0,0,0] :
+            ret.append(k)
+    return ret
+    
+def isInside(x1,y1, x2,y2, xx, yy):
+    if xx>=x1 and xx<=x2 and yy>=y1 and yy<=y2:
+        print(str(x1) + " "+ str(y1) + " " + str(x2) + " " + str(y2)+ " " + str(xx)+ " " + str(yy) )
+        return True
+    else: return False
+
+
+image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) 
@@ -284,11 +319,11 @@ if freqRed >0.15 :
     #réduit image normale
     image= rotateImage(image,angle)
     img = image[startY:endY,startX:endX]
-    
+    im=img.copy() # copie 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 11, 17, 17)
-    edged = cv2.Canny(gray, 30, 200)
-    cv2.imshow("Image", edged)
+    contours = cv2.Canny(gray, 30, 200)
+    cv2.imshow("Image", contours)
     cv2.waitKey(0)
     
     #réduit le red
@@ -333,7 +368,8 @@ if freqRed >0.15 :
     MethodeMoy(dilated)
     zoneL,zoneC=findLogo(dilated)
     zoneLb,zoneCb=MethodeMoy(dilated)
-    
+
+    zones=[]
     for l in zoneLb:
         for c in zoneCb:
             propBlancs = sum(sum(dilated[l[0]:l[1],c[0]:c[1]]))
@@ -345,12 +381,77 @@ if freqRed >0.15 :
                     startL,endL,startC,endC = recentre(red[l[0]:l[1],c[0]:c[1]])
                     cv2.rectangle(img, (c[0]+startC, l[0]+startL), (c[1]+endC, l[1]+endL), (255, 0, 0), 2)
                     
-                    #agrandi la zone si on trouve toujours des zones non rouges autour
-                    startX,endX,startY,endY = extendArea(edged,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
+                    #agrandi la zone si on trouve toujours des contours autour
+                    
+                    startX,endX,startY,endY = extendArea(contours,c[0]+startC , l[0]+startL , c[1]+endC ,l[1]+endL)
                     cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
-            
+                    if  endX - startX >10 and endY - startY >10:
+                        zones.append([startX,endX,startY,endY])
+                    
     cv2.imshow("Image", img)
     cv2.waitKey(0)
+    
+    print("*"*100)
+    print(zones)
+    zones = getOutside(zones)
+    print("*"*100)
+    print(zones)
+    
+
+    for z in zones :
+        cv2.rectangle(im, (z[0], z[2]), (z[1], z[3]), (255, 255, 255), 2) 
+    cv2.imshow("Image", im)
+    cv2.waitKey(0)
+    
+    #logoreco 
+    
+    template = cv2.imread("..\\Exemple-annonces\\template5.jpg")
+    template= cv2.flip(template, -1)
+    template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    template = cv2.Canny(template, 50, 200)
+    (tH, tW) = template.shape[:2]
+    
+    for z in zones:
+        logo = im[z[2]:z[3],z[0]:z[1]]
+        logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
+        plt.imshow(logo,'gray')
+        plt.show()
+        found = None
+        for rotangle in range(0,360,20):
+            grayt = rotateImage(logo,rotangle)
+        # loop over the scales of the image
+            for scale in np.linspace(0.5, 3, 50)[::-1]:
+                # resize the image according to the scale, and keep track
+                # of the ratio of the resizing
+                resized = imutils.resize(grayt, width = int(grayt.shape[1] * scale))
+                r = grayt.shape[1] / float(resized.shape[1])
+        
+                # if the resized image is smaller than the template, then break
+                # from the loop
+                if resized.shape[0] < tH or resized.shape[1] < tW:
+                    break
+                # detect edges in the resized, grayscale image and apply template
+                # matching to find the template in the image
+                edged = cv2.Canny(resized, 50, 200)
+                result = cv2.matchTemplate(edged, template, cv2.TM_CCOEFF_NORMED)
+                (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
+                # if we have found a new maximum correlation value, then ipdate
+                # the bookkeeping variable
+                
+                if found is None or maxVal > found[0]:
+                    found = (maxVal, maxLoc, r,rotangle)
+        
+        # unpack the bookkeeping varaible and compute the (x, y) coordinates
+        # of the bounding box based on the resized ratio
+        (_, maxLoc, r) = (found[0],found[1],found[2])
+        (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
+        (endX, endY) = (int((maxLoc[0] + tW) * r), int((maxLoc[1] + tH) * r))
+        print(found[0])
+        # draw a bounding box around the detected result and display the image
+        image=rotateImage(logo,found[3])
+        cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
+        cv2.imshow("Image", image)
+        cv2.waitKey(0)
 #    logoPosition={}
 #    pos=0
 #    for l in zoneL:
