@@ -194,7 +194,7 @@ def isRed(img):
 def extendArea(pict,startX,startY,endX,endY):
     
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (4,4))
-    pict = cv2.dilate(pict, kernel, iterations = 1)
+    pict = cv2.dilate(pict, kernel, iterations = 2)
     
     while sum(pict[startY:endY,startX]==255)!=0 and startX>0:
         startX-=1
@@ -295,7 +295,7 @@ def isInside(x1,y1, x2,y2, xx, yy):
     else: return False
 
 
-image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
+image = cv2.imread("..\\Exemple-annonces\\oo2.jpg")
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 lower = np.array([120, 80, 80]) 
@@ -447,6 +447,10 @@ if freqRed >0.15 :
         (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
         (endX, endY) = (int((maxLoc[0] + tW) * r), int((maxLoc[1] + tH) * r))
         print(found[0])
+        if found[0]>0.25:
+            print('-'*100 + '\n' + '*'*100)
+            print("TROUVéééééééééééééééééééééééééééééé")
+            print('-'*100 + '\n' + '*'*100)
         # draw a bounding box around the detected result and display the image
         image=rotateImage(logo,found[3])
         cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
