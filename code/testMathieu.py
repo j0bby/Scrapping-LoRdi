@@ -229,7 +229,7 @@ def MethodeMoy(dilated):
     
     
 def getOutside(zones):
-    #TODO : améliorer cette méthode
+    #améliorer cette méthode
 # réunis les zones qui s'intersectent en une grande zone
     for partie in range(len(zones)) : 
             for k in range(len(zones)) :
@@ -270,7 +270,10 @@ def isInside(x1,y1, x2,y2, xx, yy):
 #########################################################################################
     
 #chargement de l'image
-image = cv2.imread("..\\Exemple-annonces\\oo21.jpg")
+# TODO:
+    #face : oo1, 2 , 3, 5
+    #perspective : 4, 21, 13(faire flip)
+image = cv2.imread("..\\Exemple-annonces\\oo1.jpg")
 
 # convertion en HSV
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -367,7 +370,9 @@ if freqRed >0.15 :
                     
                     #dessine Blanc                    
                     cv2.rectangle(img, (startX, startY), (endX, endY), (255, 255, 255), 2)
-                    if  endX - startX >10 and endY - startY >10:
+                    prop = (endX - startX)*(endY - startY)/(dilated.shape[1]*dilated.shape[0])
+                
+                    if  endX - startX >10 and endY - startY >10 and prop<0.5:
                         zones.append([startX,endX,startY,endY])
                     
     cv2.imshow("Image", img)
@@ -386,7 +391,9 @@ if freqRed >0.15 :
     
 #---------- reconnaissance du logo    
     #chargement du template
+    #TODO:
     template = cv2.imread("..\\Exemple-annonces\\t5.jpg")
+    #template = cv2.flip(template,-1)  
     
     # contours du template
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
@@ -402,7 +409,7 @@ if freqRed >0.15 :
         found = None
         
         # recherche le logo dans l'image
-        for rotangle in range(-5,5,50):
+        for rotangle in range(-5,5,1):
             grayt = rotateImage(logo,rotangle)
         # loop over the scales of the image
             for scale in np.linspace(0.3, 3, 200)[::-1]:
@@ -418,7 +425,7 @@ if freqRed >0.15 :
                 # detect edges in the resized, grayscale image and apply template
                 # matching to find the template in the image
                 edged = cv2.Canny(resized, 50, 200)
-                result = cv2.matchTemplate(edged, template, cv2.TM_CCOEFF_NORMED)
+                result = cv2.matchTemplate(edged, template, cv2.TM_CCORR_NORMED)
                 (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
                 # if we have found a new maximum correlation value, then ipdate
                 # the bookkeeping variable
@@ -428,16 +435,17 @@ if freqRed >0.15 :
         
         # unpack the bookkeeping varaible and compute the (x, y) coordinates
         # of the bounding box based on the resized ratio
-        (_, maxLoc, r) = (found[0],found[1],found[2])
-        (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
-        (endX, endY) = (int((maxLoc[0] + tW) * r), int((maxLoc[1] + tH) * r))
-        print(found[0])
+        if found !=None:
+            (_, maxLoc, r) = (found[0],found[1],found[2])
+            (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
+            (endX, endY) = (int((maxLoc[0] + tW) * r), int((maxLoc[1] + tH) * r))
+            print(found[0])
         
-        # draw a bounding box around the detected result and display the image
-        image=rotateImage(logo,found[3])
-        cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
-        plt.imshow(image,'gray')
-        plt.show()
+            # draw a bounding box around the detected result and display the image
+            image=rotateImage(logo,found[3])
+            cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
+            plt.imshow(image,'gray')
+            plt.show()
     
 elif freqRed>0.05 :
     print("Some Red")
